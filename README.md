@@ -13,8 +13,20 @@ a graphical programming environment for modeling and simulating (Android, Window
 <img src="screens/android/library.png" width=600px></img>
 <img src="screens/android/sublabrary.png" width=600px></img>
 
+Advanced Control:
+* Double tap on a block to rotate it
+* Tap & Hold on a block to change it's parameters
+* Tap & Hold on a scope to see the graph
+* Pinch to zoom
+
 ## Windows
 <img src="screens/desctop/design.png" width=400px></img>
 <img src="screens/desctop/plot1.png" width=400px></img>
 <img src="screens/desctop/plot2.png" width=400px></img>
 <img src="screens/desctop/settings.png" width=400px></img>
+
+Advanced Control:
+* Double click on a block to rotate it
+* Click & Hold on a block to change it's parameters
+* Click & Hold on a scope to see the graph
+* Scrollwheel to zoom
