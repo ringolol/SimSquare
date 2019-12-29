@@ -1,0 +1,75 @@
+<RCC>
+    <qresource prefix="/images"/>
+    <qresource prefix="/images/elements">
+        <file>pic/el_integrator.png</file>
+        <file>pic/el_mul.png</file>
+        <file>pic/el_scope.png</file>
+        <file>pic/el_sum.png</file>
+        <file>pic/elem_bg.png</file>
+        <file>pic/el_gain.png</file>
+        <file>pic/el_delay.png</file>
+        <file>pic/butt_sim.png</file>
+        <file>pic/el_integrator2.png</file>
+        <file>pic/no_image.png</file>
+        <file>pic/el_const.png</file>
+        <file>pic/el_sin_source.png</file>
+        <file>pic/el_step.png</file>
+        <file>pic/el_puls.png</file>
+        <file>pic/el_time.png</file>
+        <file>pic/el_diff.png</file>
+        <file>pic/el_not.png</file>
+        <file>pic/el_or.png</file>
+        <file>pic/el_and.png</file>
+        <file>pic/el_s0.png</file>
+        <file>pic/el_s1.png</file>
+        <file>pic/el_div.png</file>
+        <file>pic/el_sub.png</file>
+        <file>pic/el_abs.png</file>
+        <file>pic/el_sign.png</file>
+        <file>pic/el_tan.png</file>
+        <file>pic/el_cos.png</file>
+        <file>pic/el_atan.png</file>
+        <file>pic/el_acos.png</file>
+        <file>pic/el_asin.png</file>
+        <file>pic/el_sin.png</file>
+        <file>pic/el_pow.png</file>
+        <file>pic/el_sqr.png</file>
+        <file>pic/el_sqrt.png</file>
+        <file>pic/el_harmonic.png</file>
+        <file>pic/el_transf.png</file>
+        <file>pic/el_ln.png</file>
+        <file>pic/el_log.png</file>
+        <file>pic/el_exp.png</file>
+        <file>pic/el_hyster.png</file>
+        <file>pic/el_deadzone.png</file>
+        <file>pic/el_satur.png</file>
+        <file>pic/el_backlash.png</file>
+        <file>pic/el_switch.png</file>
+        <file>pic/el_compare.png</file>
+        <file>pic/el_RStrig.png</file>
+        <file>pic/el_xor.png</file>
+        <file>pic/el_scope4.png</file>
+    </qresource>
+    <qresource prefix="/images/toolbar">
+        <file>pic/tb_arithmetic.png</file>
+        <file>pic/tb_linear.png</file>
+        <file>pic/tb_logic.png</file>
+        <file>pic/tb_nonlinear.png</file>
+        <file>pic/tb_scope.png</file>
+        <file>pic/tb_source.png</file>
+        <file>pic/btn_add.png</file>
+        <file>pic/arrow_bg.png</file>
+        <file>pic/back_btn.png</file>
+        <file>pic/toolbar_bg.png</file>
+        <file>pic/showall_btn.png</file>
+        <file>pic/tb_common.png</file>
+        <file>pic/delete_btn.png</file>
+        <file>pic/btn_report.png</file>
+        <file>pic/btn_loadfile.png</file>
+        <file>pic/btn_newfile.png</file>
+    </qresource>
+    <qresource prefix="/images/other">
+        <file>pic/menu_bg.png</file>
+        <file>pic/main_menu.png</file>
+    </qresource>
+</RCC>

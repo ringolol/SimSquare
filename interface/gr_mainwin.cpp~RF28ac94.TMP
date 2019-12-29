@@ -1,0 +1,1047 @@
+#include "gr_mainwin.h"
+//#include <QMessageBox>
+//#include <QtGlobal>
+
+
+MainWindow::MainWindow()
+{
+    this->grabGesture(Qt::GestureType::PinchGesture);
+    //this->grabGesture(Qt::GestureType::TapAndHoldGesture);
+    InfOverlay=1;
+    //QtAndroidTools::InitializeQmlTools();
+    //qml_window=new QQuickView();
+    //qml_window->setSource(QUrl::fromLocalFile(":/qml/interface/AndroidAdMobBanner.qml"));
+    //qml_window->showNormal();
+    //qml_window->setWidth(320);
+    //qml_window->setHeight(50);
+    //banner1 = (QObject*)qml_window->rootObject();
+    //QObject *banner11 = banner1->findChild<QObject*>("col")->findChild<QObject*>("Button1");
+    //QMetaObject::invokeMethod(banner11, "onClicked");
+    //hide();
+    //banner1->setProperty("width", 320);
+    //banner1->setProperty("height", 50);
+    //QMetaObject::invokeMethod(banner11, "show");
+    //qml_window->show();
+    //this->grabGesture(Qt::GestureType::TapGesture);
+    //this->grabGesture(Qt::GestureType::PanGesture);
+    //set window pars
+    SetWindow();
+    //Update screen size
+    UpdSize();
+    //set grid
+    GRID_STEP0=(int)(Get1cm()*0.75+0.5);
+    GRID_STEP=GRID_STEP0;
+    GRID_OFFSET_X=0;
+    GRID_OFFSET_Y=0;
+
+    grid_step_smooth=GRID_STEP0;
+
+    //create windows
+    //workspace
+    Gr_Window *gui_ws=new Gr_Window(0,0,w_w,w_h,DRWABLE_STATIC);
+    //block type
+    Gr_Window *gui_bt=new Gr_Window(0,0,w_w,w_h,DRWABLE_STATIC);
+    //add block
+    Gr_Window *gui_ab=new Gr_Window(0,0,w_w,w_h,DRWABLE_STATIC);
+    //graph
+    //Gr_Window *gui_gr=new Gr_Window(0,0,WIN_WIDTH,WIN_HEIGHT,DRWABLE_STATIC);
+    Graph=new Gr_Graph(0,0,w_w,w_h,DRWABLE_GRAPH);
+    //main
+    Gr_Window *gui_main=new Gr_Window;
+    Windows.insert(pair<window_index,Gr_Window*>(WI_WS,gui_ws));
+    Windows.insert(pair<window_index,Gr_Window*>(WI_BT,gui_bt));
+    Windows.insert(pair<window_index,Gr_Window*>(WI_AB,gui_ab));
+    Windows.insert(pair<window_index,Gr_Window*>(WI_GR,Graph));
+    Windows.insert(pair<window_index,Gr_Window*>(WI_MAIN,gui_main));
+
+    //WORKSPACE WINDOW
+    //toolbar
+    Gr_Panel *p1=new Gr_Panel(w_w-Get1cm()*6.75,0,Get1cm()*10,Get1cm()*1.5);
+    p1->right=true;
+    p1->top=true;
+    p1->LoadImg(":/images/toolbar/pic/toolbar_bg.png");
+    Windows[WI_WS]->Panels.push_back(p1);
+    //move btn
+    Gr_Drawable *move_btn=new Gr_Drawable(Get1cm()*0.25,Get1cm()*0.25,Get1cm(),Get1cm(),DRWABLE_BUTTON,DE_MOVE);
+    move_btn->LoadImg(":/images/toolbar/pic/move_btn.png");
+    Windows[WI_WS]->Panels[0]->Objects.push_back(move_btn);
+    //rotate btn
+    Gr_Drawable *rotate_btn=new Gr_Drawable(Get1cm()*1.5,Get1cm()*0.25,Get1cm(),Get1cm(),DRWABLE_BUTTON,DE_ROTATE);
+    rotate_btn->LoadImg(":/images/toolbar/pic/rotate_btn.png");
+    Windows[WI_WS]->Panels[0]->Objects.push_back(rotate_btn);
+    //magic btn
+    Gr_Drawable *magic_btn=new Gr_Drawable(Get1cm()*2.75,Get1cm()*0.25,Get1cm(),Get1cm(),DRWABLE_BUTTON,DE_MAGIC);
+    magic_btn->LoadImg(":/images/toolbar/pic/magic_btn.png");
+    Windows[WI_WS]->Panels[0]->Objects.push_back(magic_btn);
+    //sim button
+    Gr_Drawable *sim_btn=new Gr_Drawable(Get1cm()*4,Get1cm()*0.25,Get1cm(),Get1cm(),DRWABLE_BUTTON,DE_SIM);
+    sim_btn->LoadImg(":/images/elements/pic/butt_sim.png");
+    Windows[WI_WS]->Panels[0]->Objects.push_back(sim_btn);
+    //show all
+    Gr_Drawable *showall_btn=new Gr_Drawable(Get1cm()*5.25,Get1cm()*0.25,Get1cm(),Get1cm(),DRWABLE_BUTTON,DE_SHOWALL);
+    showall_btn->LoadImg(":/images/toolbar/pic/showall_btn.png");
+    Windows[WI_WS]->Panels[0]->Objects.push_back(showall_btn);
+
+    //back panel
+    Gr_Panel *p2=new Gr_Panel(0,0,Get1cm()*1.5,Get1cm()*1.5);
+    p2->left=true;
+    p2->top=true;
+    p2->LoadImg(":/images/toolbar/pic/arrow_bg.png");
+    Windows[WI_WS]->Panels.push_back(p2);
+    //back btn
+    Gr_Drawable *back_btn=new Gr_Drawable(0,0,Get1cm()*1.5,Get1cm()*1.5,DRWABLE_BUTTON,DE_BACK);
+    back_btn->LoadImg(":/images/toolbar/pic/back_btn.png");
+    Windows[WI_WS]->Panels[1]->Objects.push_back(back_btn);
+
+    //add panel
+    Gr_Panel *p3=new Gr_Panel(w_w-Get1cm()*1.75,w_h-Get1cm()*1.75,Get1cm()*1.75,Get1cm()*1.75);
+    p3->right=true;
+    p3->bottom=true;
+    Windows[WI_WS]->Panels.push_back(p3);
+    //add button
+    Gr_Drawable *add_btn=new Gr_Drawable(0,0,Get1cm()*1.5,Get1cm()*1.5,DRWABLE_BUTTON,DE_ADD);
+    add_btn->LoadImg(":/images/toolbar/pic/btn_add.png");
+    Windows[WI_WS]->Panels[2]->Objects.push_back(add_btn);
+
+
+    //BLOCKTYPE WINDOW
+    //title
+    Gr_Panel *pb1=new Gr_Panel(0,0,w_w,Get1cm()*1.5);
+    pb1->left=true;
+    pb1->top=true;
+    pb1->LoadImg(":/images/other/pic/menu_bg.png");
+    pb1->static_w=false;
+    Windows[WI_BT]->Panels.push_back(pb1);
+    //back btn
+    Gr_Drawable *bt_back_btn=new Gr_Drawable(0,0,Get1cm()*1.5,Get1cm()*1.5,DRWABLE_BUTTON,DE_BT_BACK);
+    bt_back_btn->LoadImg(":/images/toolbar/pic/back_btn.png");
+    Windows[WI_BT]->Panels[0]->Objects.push_back(bt_back_btn);
+
+    //content
+    Gr_Panel *pb2=new Gr_Panel(0,Get1cm()*1.5,w_w,w_h-Get1cm()*1.5);
+    pb2->left=true;
+    pb2->top=true;
+    pb2->resize_cont=true;
+    pb2->static_h=false;
+    pb2->static_w=false;
+    Windows[WI_BT]->Panels.push_back(pb2);
+
+    Gr_Drawable *c0=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_COMMON);
+    c0->LoadImg(":/images/toolbar/pic/tb_common.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c0);
+
+    Gr_Drawable *c1=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_SOURCE);
+    c1->LoadImg(":/images/toolbar/pic/tb_source.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c1);
+
+    Gr_Drawable *c2=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_MATH);
+    c2->LoadImg(":/images/toolbar/pic/tb_arithmetic.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c2);
+
+    Gr_Drawable *c3=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_LINE);
+    c3->LoadImg(":/images/toolbar/pic/tb_linear.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c3);
+
+    Gr_Drawable *c4=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_SCOPE);
+    c4->LoadImg(":/images/toolbar/pic/tb_scope.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c4);
+
+    Gr_Drawable *c5=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_NONLINE);
+    c5->LoadImg(":/images/toolbar/pic/tb_nonlinear.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c5);
+
+    Gr_Drawable *c6=new Gr_Drawable(0,0,Get1cm()*2.43,Get1cm()*1,DRWABLE_BUTTON,DE_BT_LOGIC);
+    c6->LoadImg(":/images/toolbar/pic/tb_logic.png");
+    Windows[WI_BT]->Panels[1]->Objects.push_back(c6);
+
+    //COMMON BLOCK ADD
+    //title
+    Gr_Panel *pa1=new Gr_Panel(0,0,w_w,Get1cm()*1.5);
+    pa1->left=true;
+    pa1->top=true;
+    pa1->LoadImg(":/images/other/pic/menu_bg.png");
+    pa1->static_w=false;
+    Windows[WI_AB]->Panels.push_back(pa1);
+    //back btn
+    Gr_Drawable *ab_back_btn=new Gr_Drawable(0,0,Get1cm()*1.5,Get1cm()*1.5,DRWABLE_BUTTON,DE_AB_BACK);
+    ab_back_btn->LoadImg(":/images/toolbar/pic/back_btn.png");
+    Windows[WI_AB]->Panels[0]->Objects.push_back(ab_back_btn);
+
+    //content
+    Gr_Panel *pa2=new Gr_Panel(0,Get1cm()*1.5,w_w,w_h-Get1cm()*1.5);
+    pa2->left=true;
+    pa2->top=true;
+    pa2->resize_cont=true;
+    pa2->static_h=false;
+    pa2->static_w=false;
+    Windows[WI_AB]->Panels.push_back(pa2);
+
+    Gr_Drawable *ca0=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_SOURCE1);
+    ca0->LoadImg(":/images/elements/pic/souce1.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca0);
+
+    Gr_Drawable *ca1=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_ADD);
+    ca1->LoadImg(":/images/elements/pic/add.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca1);
+
+    Gr_Drawable *ca2=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_GAIN);
+    ca2->LoadImg(":/images/elements/pic/gain.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca2);
+
+    Gr_Drawable *ca3=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_INTEG);
+    ca3->LoadImg(":/images/elements/pic/integ.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca3);
+
+    Gr_Drawable *ca4=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_INTEG2);
+    ca4->LoadImg(":/images/elements/pic/integ2.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca4);
+
+    Gr_Drawable *ca5=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_SCOPE);
+    ca5->LoadImg(":/images/elements/pic/scope.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca5);
+
+    Gr_Drawable *ca6=new Gr_Drawable(0,0,Get1cm()*6,Get1cm()*5,DRWABLE_BUTTON,DE_AB_DELAY);
+    ca6->LoadImg(":/images/elements/pic/delay.png");
+    Windows[WI_AB]->Panels[1]->Objects.push_back(ca6);
+
+    //create pens fonts etc.
+    SetPainters();
+
+    //load control panel
+    //LoadContent();
+
+    tapAndHoldTimer= new QTimer(this);
+    //tapAndHoldTimer->singleShot(700, this, &MainWindow::TapAndHoldEv);
+    //tapAndHoldTimer->setSingleShot(true);
+    //tapAndHoldTimer->setInterval(700);
+    //connect(tapAndHoldTimer, &QTimer::timeout, this, &MainWindow::TapAndHoldEv);
+    connect(tapAndHoldTimer, &QTimer::timeout, this, &MainWindow::TapAndHoldEv);
+    tapAndHoldTimer->start(700);
+    //set screen refresh timer
+    SetMainTimer();
+
+    //set fps counter
+    SetInfCount();
+
+    //Show overlay
+    //InfOverlay=true;
+}
+
+MainWindow::~MainWindow()
+{
+
+}
+
+void MainWindow::paintEvent(QPaintEvent *event)
+{
+    //draw preparation
+    painter.begin(this);
+    //set default pens/brushes/fonts and render options
+    SetDrawInstr();
+    //draw things
+    Draw(event);
+    //end painting
+    painter.end();
+}
+
+void MainWindow::Draw(QPaintEvent *event)
+{
+    //upd
+    UpdSize();
+    Windows[ActiveWin]->Upd(w_w,w_h);
+    //draw BG
+    painter.fillRect(event->rect(), bgBrush);
+
+    //draw active window
+    switch(ActiveWin)
+    {
+    case WI_WS:
+        //draw workspace
+        DrawWorkSpace(event);
+        break;
+    case WI_BT:
+        //draw menu #1
+        DrawChooseType(event);
+        break;
+    case WI_AB:
+        //draw menu #2
+        DrawAddBlock(event);
+        break;
+    case WI_GR:
+        //draw graph
+        Graph->Draw(&painter,event);
+        break;
+    default:
+        break;
+    }
+    //draw GUI
+    Windows[ActiveWin]->Draw(&painter,event);
+
+    //draw information overlay
+    DrawInf(event);
+}
+
+void MainWindow::DrawWorkSpace(QPaintEvent *event)
+{
+    //draw grid
+    DrawGrid(event);
+    //draw objects
+    DrawObjects(event);
+    //draw lines
+    DrawLines(event);
+}
+
+void MainWindow::DrawAddBlock(QPaintEvent *event)
+{
+
+}
+
+void MainWindow::DrawChooseType(QPaintEvent *event)
+{
+
+}
+
+void MainWindow::SetWindow()
+{
+    QScreen *screen = QApplication::screens().at(0);
+    resize(screen->availableSize().width(),screen->availableSize().height());
+    //setHeight(WIN_HEIGHT);
+    //setWidth(WIN_WIDTH);
+    //setTitle(WIN_TITLE);
+}
+
+void MainWindow::SetDrawInstr()
+{
+    //set default instruments
+    painter.setPen(mainPen);
+    painter.setFont(mainFont);
+    //set render hints
+    painter.setRenderHint(QPainter::Antialiasing);
+}
+
+void MainWindow::SetPainters()
+{
+    //backgroud color
+    bgBrush = QBrush(QColor(255, 255, 255));
+    //main pen
+    mainPen = QPen(Qt::black);
+    mainPen.setWidth(1);
+    //grid pen
+    gridPen=QPen(Qt::lightGray);
+    gridPen.setWidth(1);
+    //line pen
+    linePen=QPen(Qt::black);
+    linePen.setWidth((int)(0.1*Get1cm()+0.5));
+    //linePen.setWidth(3);
+    //main text font
+    mainFont.setPixelSize(12);
+}
+
+void MainWindow::SetMainTimer()
+{
+    //set and start the main timer
+    mainTimer= new QTimer(this);
+    connect(mainTimer, &QTimer::timeout, this, &MainWindow::Anima);
+    mainTimer->start(MAIN_TIMER_UPD_TIME);
+}
+
+void MainWindow::UpdSize()
+{
+    QScreen *screen = QApplication::screens().at(0);
+    //w_w=screen->availableSize().width();
+    //w_h=screen->availableSize().height();
+    w_w=size().width();
+    w_h=size().height();
+    dpi=screen->logicalDotsPerInch();
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QOpenGLWidget::resizeEvent(event);
+    //ResetFlags();
+    //connect(tapAndHoldTimer, &QTimer::timeout, this, &MainWindow::TapAndHoldEv);
+}
+
+void MainWindow::Anima()
+{
+    //frame count
+    //FrameCounter++;
+    //drag
+    if(isDrag)
+    {
+        Drawables[drag_ind]->SetX(mX+drag_offset_X);
+        Drawables[drag_ind]->SetY(mY+drag_offset_Y);
+    }
+    //update grid offset
+    if(isOffset)
+    {
+        GRID_OFFSET_X=GRID_OFFSET_X+mX-Xoff1;
+        GRID_OFFSET_Y=GRID_OFFSET_Y+mY-Yoff1;
+        Xoff1=mX;
+        Yoff1=mY;
+    }
+    //check if user start drag object
+    if(isHold && sqrt((mX-mX0)*(mX-mX0)+(mY-mY0)*(mY-mY0))>Get1cm()*SMALL_AREA)
+    {
+        event_called+="drag start\n";
+        //if they started than
+        //tapAndHoldTimer->stop();
+        THTimerStop=true;
+        isHold=false;
+        ObjectClick(NULL,ind_pressed,3);
+    }
+
+    //check if user start scrolling
+    if(may_scroll)
+    {
+        if(!scroll && sqrt((mX-mX0)*(mX-mX0)+(mY-mY0)*(mY-mY0))>Get1cm()*SMALL_AREA)
+        {
+            event_called+="scroll start\n";
+            Yscr=mY;
+            scroll=true;
+        }
+    }
+
+    //animate scrolling
+    if(scroll)
+    {
+        int dy=mY-Yscr;
+        int yn=Windows[ActiveWin]->Panels[clk.first]->y+dy;
+        if((dy>0 && yn<Windows[ActiveWin]->Panels[clk.first]->y0) || (dy<0 && yn+Windows[ActiveWin]->Panels[clk.first]->height>w_h))
+        {
+            Windows[ActiveWin]->Panels[clk.first]->y+=dy;
+        }
+        Yscr=mY;
+    }
+
+    //redraw window (call paintEvent)
+    update();
+}
+
+//FPS
+void MainWindow::SetInfCount()
+{
+    //set to zero FrameCounter
+    //FrameCounter=0;
+    //set and start a timer
+    //FPStimer = new QTimer(this);
+    //connect(FPStimer, &QTimer::timeout, this, &MainWindow::CalcFPS);
+    //FPStimer->start(INF_TIMER_UPD_TIME);
+}
+void MainWindow::CalcFPS()
+{
+    //count frames per second
+    FPS=FrameCounter*1000.0/INF_TIMER_UPD_TIME;
+    //set to zero FrameCounter
+    FrameCounter=0;
+}
+void MainWindow::DrawInf(QPaintEvent *event)
+{
+    if(InfOverlay==1)
+    {
+        //set Pen
+        QFont ov_font;
+        ov_font.setPixelSize((int)(0.5*Get1cm()+0.5));
+        painter.setFont(ov_font);
+        //create string
+        QString str=QString("FPS=")+QString::number(FPS)\
+                +QString("\nmX=")+QString::number(mX)\
+                +QString(";   mY=")+QString::number(mY)\
+                +QString("\nWinW=")+QString::number(this->width())\
+                +QString("   WinH=")+QString::number(this->height())\
+                +QString("\nGRID_STEP=")+QString::number(GRID_STEP)\
+                +QString("\nLAST EVENT=")+event_called;
+        //draw overlay
+        painter.drawText(QRect(0, 0, w_w, w_h), Qt::AlignLeft,str);
+    }
+}
+
+void MainWindow::DrawObjects(QPaintEvent *event)
+{
+    painter.setPen(linePen);
+    for(int i=0;i<Drawables.size();i++)
+    {
+        //if the user can't see an object we don't draw it IsObjVisible(Drawables[i]))
+        if(true)
+        {
+            Drawables[i]->Draw(&painter,event);
+        }
+    }
+}
+
+void MainWindow::DrawLines(QPaintEvent *event)
+{
+    painter.setPen(linePen);
+
+    for(int i=0;i<Lines.size();i++)
+    {
+        Lines[i]->Draw(&painter,event);
+    }
+}
+
+void MainWindow::DrawGrid(QPaintEvent *event)
+{
+    //set pen
+    painter.setPen(gridPen);
+    //draw vertical lines
+    int x_off=GRID_OFFSET_X%GRID_STEP;
+    int y_off=GRID_OFFSET_Y%GRID_STEP;
+    for (int i=0;i<event->rect().width();i++)
+    {
+        painter.drawLine(i*GRID_STEP+x_off,0,i*GRID_STEP+x_off,event->rect().height());
+    }
+    //draw horizontal lines
+    for (int j=0;j<event->rect().height();j++)
+    {
+        painter.drawLine(0,j*GRID_STEP+y_off,event->rect().width(),j*GRID_STEP+y_off);
+    }
+}
+
+//Mouse
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    //update mouse position information
+    mX=event->x();
+    mY=event->y();
+}
+
+void MainWindow::CopyByDragging(QMouseEvent *event, int i)
+{
+    //create new item
+    Gr_DrawCore *dr=new Gr_DrawCore(Drawables[i]);
+    //set workspace-type
+    dr->SetType(DRWABLE_WORKSPACE);
+    //set calc index
+    dr->calcInd=GetCalcInd();
+    //add element to drawables
+    Drawables.push_back(dr);
+    //set drag options
+    drag_ind=Drawables.size()-1;
+    isDrag=1;
+    drag_offset_X=Drawables[i]->GetX()-mX-GRID_OFFSET_X;
+    drag_offset_Y=Drawables[i]->GetY()-mY-GRID_OFFSET_Y;
+}
+
+void MainWindow::WorkSpaceClick()
+{
+    //else offset grid
+    Xoff1=mX;
+    Yoff1=mY;
+    isOffset=true;
+}
+
+void MainWindow::ObjectClick(QMouseEvent *event, int i,int force_CT)
+{
+    if(i==-1)
+    {
+        cout<<"ERROR: Obj Click incorrect Index"<<endl;
+        return;
+    }
+
+    //force cursor type
+    int c_type=cursor_type;
+    if(force_CT!=-1)
+        c_type=force_CT;
+
+    switch (c_type)
+    {
+    case 0:
+        int InpCl;
+        int OutCl;
+        //input clicked?
+        if((InpCl=Drawables[i]->InputClicked(mX,mY))!=-1)
+        {
+            line_indIn=i;
+            line_numIn=InpCl;
+            DotInExist=true;
+        }
+        //output clicked?
+        if((OutCl=Drawables[i]->OutputClicked(mX,mY))!=-1)
+        {
+            line_indOut=i;
+            line_numOut=OutCl;
+            DotOutExist=true;
+        }
+        //create line between input and output if both flags are set
+        if(DotInExist && DotOutExist)
+        {
+            Gr_Line* linet=new Gr_Line();
+            linet->SetPi(Drawables[line_indIn],line_numIn);
+            linet->SetPo(Drawables[line_indOut],line_numOut);
+            Lines.push_back(linet);
+            DotInExist=false;
+            DotOutExist=false;
+        }
+        break;
+    case 1:
+        Drawables[i]->Rotate();
+        break;
+    case 2:
+        if(Drawables[i]->GetType()==DRWABLE_WORKSPACE)
+                SetSAndP(Drawables[i]);
+        if(Gr_Core::GetMode(Drawables[i]->core_type)==COM_SCOPE)
+        {
+            //prepare graph
+            Graph->SetData(&Drawables[i]->data);
+            Graph->Prepare();
+            //pop-up graph
+            ActiveWin=WI_GR;
+        }
+        break;
+    case 3:
+        drag_ind=i;
+        isDrag=2;
+        drag_offset_X=Drawables[i]->GetX()-mX-GRID_OFFSET_X;
+        drag_offset_Y=Drawables[i]->GetY()-mY-GRID_OFFSET_Y;
+        break;
+    }
+}
+
+void MainWindow::ButtonClick(QMouseEvent *event, Gr_Drawable *o)
+{
+    if(ActiveWin==WI_WS)
+    {
+        switch (o->event)
+        {
+        case DE_SIM:
+            Convert();
+            Calc();
+            break;
+        case DE_ADD:
+            ActiveWin=WI_BT;
+            break;
+        case DE_MOVE:
+            cursor_type=0;
+            break;
+        case DE_ROTATE:
+            cursor_type=1;
+            break;
+        case DE_MAGIC:
+            cursor_type=2;
+            break;
+        }
+    }
+    else if(ActiveWin==WI_BT)
+    {
+        switch (o->event)
+        {
+        case DE_BT_BACK:
+            ActiveWin=WI_WS;
+            break;
+        case DE_BT_COMMON:
+            ActiveWin=WI_AB;
+            break;
+        }
+    }
+
+    else if(ActiveWin==WI_AB)
+    {
+        Gr_DrawCore *obj;
+        int pos_x=w_w/2+0.5;
+        int pos_y=w_h/2+0.5;
+        switch (o->event)
+        {
+        case DE_AB_BACK:
+            ActiveWin=WI_BT;
+            return;
+        case DE_AB_SOURCE1:
+            obj=new Gr_DrawCore(pos_x,pos_y,0,1,DRWABLE_WORKSPACE,COT_SOURCE);
+            obj->LoadImg(":/images/elements/pic/el_source.png");
+            break;
+        case DE_AB_ADD:
+            obj=new Gr_DrawCore(pos_x,pos_y,2,1,DRWABLE_WORKSPACE,COT_ADD);
+            obj->LoadImg(":/images/elements/pic/el_sum.png");
+            break;
+        case DE_AB_GAIN:
+            obj=new Gr_DrawCore(pos_x,pos_y,1,1,DRWABLE_WORKSPACE,COT_GAIN);
+            obj->LoadImg(":/images/elements/pic/el_gain.png");
+            break;
+        case DE_AB_INTEG:
+            obj=new Gr_DrawCore(pos_x,pos_y,1,1,DRWABLE_WORKSPACE,COT_INTEG);
+            obj->LoadImg(":/images/elements/pic/el_integrator.png");
+            break;
+        case DE_AB_INTEG2:
+            obj=new Gr_DrawCore(pos_x,pos_y,1,2,DRWABLE_WORKSPACE,COT_INTEG2);
+            obj->LoadImg(":/images/elements/pic/el_integrator2.png");
+            break;
+        case DE_AB_SCOPE:
+            obj=new Gr_DrawCore(pos_x,pos_y,1,0,DRWABLE_WORKSPACE,COT_SCP);
+            obj->LoadImg(":/images/elements/pic/el_scope.png");
+            break;
+        case DE_AB_DELAY:
+            obj=new Gr_DrawCore(pos_x,pos_y,1,1,DRWABLE_WORKSPACE,COT_DELAY);
+            obj->LoadImg(":/images/elements/pic/el_delay.png");
+            break;
+        default:
+            return;
+        }
+        ActiveWin=WI_WS;
+        obj->calcInd=GetCalcInd();
+        Drawables.push_back(obj);
+        //SetSAndP(obj);
+    }
+}
+
+void MainWindow::ClickWorkspace(QMouseEvent *event)
+{
+    for(int i=Drawables.size()-1;i>=0;i--)
+    {
+        //if the i-th element is clicked
+        if(Drawables[i]->Clicked(mX,mY))
+        {
+            switch(Drawables[i]->GetType())
+            {
+            //worckspace items handler
+            case DRWABLE_WORKSPACE:
+                //set options to handle click(on release) or hold events
+                //mem index
+                ind_pressed=i;
+                //set flag (if !isHold than Drag or Tap&Hold ev)
+                isHold=true;
+                //start Tap&Hold timer
+                if(cursor_type==0 && isBodyClick(i))
+                {
+                    event_called+="T&H timer start\n";
+                    THTimerStop=false;
+                    //tapAndHoldTimer->start(700);
+                    //tapAndHoldTimer->singleShot(700, this, &MainWindow::TapAndHoldEv);
+                }
+                break;
+            }
+            return;
+        }
+    }
+    //else offset grid
+    if(cursor_type==0)
+        WorkSpaceClick();
+}
+
+bool MainWindow::event(QEvent *event)
+{
+    if(event->type()==QEvent::Gesture)
+    {
+
+        QGestureEvent *ev=(QGestureEvent*)event;
+        if(QPinchGesture *pinch=(QPinchGesture*)ev->gesture(Qt::PinchGesture))
+        {
+            if(ActiveWin==WI_WS)
+            {
+                //zoom in/out on cursor position (workspace)
+                double grid_s_new;
+                grid_s_new=grid_step_smooth*pinch->scaleFactor();
+                grid_s_new=grid_s_new>1.0?grid_s_new:1.0;
+
+                GRID_OFFSET_X=(GRID_OFFSET_X-pinch->centerPoint().x())*(grid_s_new*1.0/grid_step_smooth)+pinch->centerPoint().x()+0.5;
+                GRID_OFFSET_Y=(GRID_OFFSET_Y-pinch->centerPoint().y())*(grid_s_new*1.0/grid_step_smooth)+pinch->centerPoint().y()+0.5;
+
+                grid_step_smooth=grid_s_new;
+
+                GRID_STEP=(int)grid_step_smooth;
+            }
+        }
+        ResetFlags();
+        return true;
+    }
+    else  if(event->type() == QEvent::GestureOverride)
+    {
+        event->accept();
+    }
+    return QOpenGLWidget::event(event);
+}
+
+void MainWindow::TapAndHoldEv()
+{
+    void (*a)=&
+    int var=(int)(&(MainWindow::TapAndHoldEv));
+    event_called+=QString::number(&MainWindow::TapAndHoldEv);
+    if(!THTimerStop)
+    {
+        event_called+="T&H ev start\n";
+        ObjectClick(NULL,ind_pressed,2);
+        ResetFlags();
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    event_called+="click\n";
+    //update mouse position
+    mX=event->x();
+    mY=event->y();
+
+    //mem original position
+    mX0=mX;
+    mY0=mY;
+
+    //reset mouse flags and vars
+    ResetFlags();
+
+    //check panel click
+    clk=Windows[ActiveWin]->ObjClicked(mX,mY);
+
+    //if any object was clicked
+    if(clk.first!=-1)
+    {
+        if(Windows[ActiveWin]->Panels[clk.first]->resize_cont)
+        {
+            //can be scrolled
+            may_scroll=true;
+        }
+        return;
+    }
+
+    //if click was on the work zone
+    switch(ActiveWin)
+    {
+    //workspace window
+    case WI_WS:
+        ClickWorkspace(event);
+        break;
+    //graph window
+    case WI_GR:
+        ActiveWin=WI_WS;
+        break;
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    //update m pos
+    mX=event->x();
+    mY=event->y();
+
+    //click object
+    if(isHold)
+    {
+        event_called+="click ev start\n";
+        ObjectClick(NULL,ind_pressed);
+    }
+
+    //press btn on panel
+    if(!scroll && clk.second!=-1)
+    {
+        //handle event
+        ButtonClick(event,Windows[ActiveWin]->Panels[clk.first]->Objects[clk.second]);
+    }
+
+    //reset mouse flags
+    ResetFlags();
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    //for workspace
+    if(ActiveWin==WI_WS)
+    {
+        //zoom in/out on cursor position (workspace)
+        int grid_s_new;
+        grid_s_new=GRID_STEP+2*sign(event->angleDelta().y());
+        grid_s_new=grid_s_new>1?grid_s_new:1;
+
+        GRID_OFFSET_X=(GRID_OFFSET_X-event->x())*(grid_s_new*1.0/GRID_STEP)+event->x()+0.5;
+        GRID_OFFSET_Y=(GRID_OFFSET_Y-event->y())*(grid_s_new*1.0/GRID_STEP)+event->y()+0.5;
+
+        GRID_STEP=grid_s_new;
+    }
+}
+
+void MainWindow::LoadContent()
+{
+
+}
+
+//convert from interface to core
+void MainWindow::Convert()
+{
+    //create new core object
+    delete core;
+    core=new Gr_Core;
+    //for each workspace element create core-object with core-index
+    for(int i=0;i<Drawables.size();i++)
+    {
+        if(Drawables[i]->GetType()==DRWABLE_WORKSPACE)
+            core->Add(Drawables[i]->core_type,Drawables[i]->inpN,Drawables[i]->outpN,Drawables[i]->pars,Drawables[i]->states,&Drawables[i]->data);
+    }
+    //transform lines information into core-links
+    for(int i=0;i<Lines.size();i++)
+    {
+        core->Link(Lines[i]->in_obj->calcInd,Lines[i]->numIn,Lines[i]->out_obj->calcInd,Lines[i]->numOut);
+    }
+}
+
+//calculate core
+void MainWindow::Calc()
+{
+    if(core!=NULL)
+    {
+        GetSimData();
+        //set sim step
+        core->SetStep(Ssim);
+        //get sim time
+        core->Calc(Tsim);
+        //redraw graph
+        Graph->Prepare();
+    }
+    else
+    {
+        cout<<"ERROR: Can't Calc no core object"<<endl;
+    }
+}
+
+int MainWindow::GetCalcInd()
+{
+    //first return and than increment calcInd
+    return calcInd++;
+}
+
+void MainWindow::GetSimData()
+{
+    //creatin a form
+    QDialog dialog(this);
+    QFormLayout form(&dialog);
+    QList<QLineEdit *> fields_par;
+    //form.addRow(new QLabel("Parameters"));
+    QLineEdit *lineEdit1 = new QLineEdit(&dialog);
+    lineEdit1->setInputMethodHints(Qt::ImhPreferNumbers);
+    lineEdit1->setValidator( new QDoubleValidator() );
+    lineEdit1->setText(QString::number(Tsim));
+    lineEdit1->selectAll();
+    QString label1 = QString("Sim Time");
+    form.addRow(label1, lineEdit1);
+    fields_par << lineEdit1;
+
+    QLineEdit *lineEdit2 = new QLineEdit(&dialog);
+    lineEdit2->setInputMethodHints(Qt::ImhPreferNumbers);
+    lineEdit2->setValidator( new QDoubleValidator() );
+    lineEdit2->setText(QString::number(Ssim));
+    //lineEdit1->selectAll();
+    QString label2 = QString("Sim Step");
+    form.addRow(label2, lineEdit2);
+    fields_par << lineEdit2;
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    //if Ok was clicked
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        Tsim=fields_par[0]->text().replace(',','.').toDouble();
+        Ssim=fields_par[1]->text().replace(',','.').toDouble();
+    }
+}
+
+void MainWindow::ResetFlags()
+{
+    //event_called+="reset flags\n";
+    //tapAndHoldTimer->stop();
+    THTimerStop=true;
+    //reset click
+    clk.first=-1;
+    clk.second=-1;
+    //stop scrolling
+    scroll=false;
+    may_scroll=false;
+    //stop dragging
+    isDrag=0;
+    drag_ind=-1;
+    //stop offsetting grid
+    isOffset=false;
+    //press and hold
+    ind_pressed=-1;
+    isHold=false;
+}
+
+bool MainWindow::isBodyClick(int ind)
+{
+    return (Drawables[ind]->InputClicked(mX,mY))==-1 && (Drawables[ind]->OutputClicked(mX,mY))==-1;
+}
+
+
+void MainWindow::SetSAndP(Gr_DrawCore* o)
+{
+    int n_st,n_par;
+    n_st=Gr_Core::NumOfStates(o->core_type);
+    n_par=Gr_Core::NumOfPars(o->core_type);
+
+    if(o->pars.size()!=n_par || o->states.size()!=n_st)
+    {
+        cout<<"ERROR: can't set params or states"<<endl;
+        return;
+    }
+
+    if(n_st>0 || n_par>0)
+    {
+        QDialog dialog(this);
+        dialog.setInputMethodHints(Qt::ImhPreferNumbers);
+        // Use a layout allowing to have a label next to each field
+        QFormLayout form(&dialog);
+
+        QList<QLineEdit *> fields_par;
+        if(n_par>0)
+        {
+            // Add text above the fields
+            form.addRow(new QLabel("Parameters"));
+            // Add the lineEdits with their respective labels
+            for(int i = 0; i < n_par; ++i)
+            {
+                QLineEdit *lineEdit = new QLineEdit(&dialog);
+                lineEdit->setInputMethodHints(Qt::ImhPreferNumbers);
+                lineEdit->setValidator( new QDoubleValidator() );
+                lineEdit->setText(QString::number(*o->pars[i]));
+                lineEdit->selectAll();
+                QString label = QString("Par %1").arg(i + 1);
+                form.addRow(label, lineEdit);
+
+                fields_par << lineEdit;
+            }
+        }
+
+        QList<QLineEdit *> fields_states;
+        if(n_st>0)
+        {
+            // Add some text above the fields
+            form.addRow(new QLabel("States"));
+            for(int i = 0; i < n_st; ++i)
+            {
+                QLineEdit *lineEdit = new QLineEdit(&dialog);
+                lineEdit->setInputMethodHints(Qt::ImhPreferNumbers);
+                lineEdit->setValidator( new QDoubleValidator() );
+                lineEdit->setText(QString::number(*o->states[i]));
+                lineEdit->selectAll();
+                QString label = QString("State %1").arg(i + 1);
+                form.addRow(label, lineEdit);
+
+                fields_states << lineEdit;
+            }
+        }
+
+        // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+        QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                                   Qt::Horizontal, &dialog);
+        form.addRow(&buttonBox);
+        QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+        QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+        // Show the dialog as modal
+        if (dialog.exec() == QDialog::Accepted)
+        {
+            // If the user didn't dismiss the dialog, do something with the fields
+            for(int i=0;i<fields_par.size();i++)
+            {
+                double val=fields_par[i]->text().replace(',','.').toDouble();
+                *o->pars[i]=val;
+            }
+            for(int i=0;i<fields_states.size();i++)
+            {
+                double val=fields_states[i]->text().replace(',','.').toDouble();
+                *o->states[i]=val;
+            }
+        }
+    }
+}
+
+
+
