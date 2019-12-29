@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "gr_core_const.h"
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include "./logger/gr_logger.h"
 

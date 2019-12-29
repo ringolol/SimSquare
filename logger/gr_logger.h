@@ -10,7 +10,7 @@
 #include <QString>
 #include <QStandardPaths>
 
-//#define CAN_LOG
+#define CAN_LOG
 
 using namespace std;
 

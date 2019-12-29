@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w(&a);
 
-    bool FullFlg=1;
+    bool FullFlg=0;
     if(FullFlg)
     {
         Gr_Logger().Get()<<"Set fullscreen mode";

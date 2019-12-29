@@ -24,8 +24,12 @@ MainWindow::MainWindow()
     #else
     Gr_Logger().Get()<<"Setup win dir";
     AppDir=QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if(!QDir(AppDir).exists())
+        QDir().mkdir(AppDir);
     #endif
     AppDir+='/';
+
+    Gr_Logger().Get()<<("Setup dir: " + AppDir).toLocal8Bit().data();
 
     //set up vibration
     SetVibrator();
